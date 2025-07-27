@@ -42,6 +42,7 @@ a >> 1     // right shift
 s := "hello"
 len(s)        // 5
 s[0]          // byte value of 'h'
+s2 := s[:]    // copy of s, but with different address
 ```
 
 - Strings are **immutable** and **byte-indexed**.
@@ -203,8 +204,6 @@ func sum(nums ...int) int {
 sum(1, 2, 3)
 nums := []int{1, 2, 3, 4}
 sum(nums...)
-
-
 ```
 
 - Functions can return multiple values
@@ -212,6 +211,41 @@ sum(nums...)
 - Variadic functions can be called with any number of trailing arguments. For example, fmt.Println is a common variadic function.
 - If you already have multiple args in a slice, apply them to a variadic function using func(slice...) like this.
 
+Closures
+```go
+// This function `intSeq` returns another function, which
+// we define anonymously in the body of `intSeq`. The
+// returned function _closes over_ the variable `i` to
+// form a closure.
+func intSeq() func() int {
+	i := 0
+	return func() int {
+		i++
+		return i
+	}
+}
+
+func main() {
+
+	// We call `intSeq`, assigning the result (a function)
+	// to `nextInt`. This function value captures its
+	// own `i` value, which will be updated each time
+	// we call `nextInt`.
+	nextInt := intSeq()
+
+	// See the effect of the closure by calling `nextInt`
+	// a few times.
+	fmt.Println(nextInt()) // 1
+	fmt.Println(nextInt()) // 2
+	fmt.Println(nextInt()) // 3
+
+	// To confirm that the state is unique to that
+	// particular function, create and test a new one.
+	newInts := intSeq() 
+	fmt.Println(newInts()) // 1
+}
+
+```
 
 ---
 
