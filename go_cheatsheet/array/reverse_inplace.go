@@ -6,7 +6,8 @@ func ReverseInPlace(list []int, start, end int) {
 	//for the stop condition, we want to stop when we reach the middle
 	//how do we know we have reached the middle? when i > j
 	//what is j? j is the mirror index of i
-	// j := end-i
+	// j := start+end-i
+	// NOTE: j cannot be end -i, this only works if start is 0.
 	// i < j is the continue
 	for i := start; i < start+end-i; i++ {
 		j := start + end - i
