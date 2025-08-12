@@ -1,0 +1,76 @@
+# Arrays vs Slices
+In the Go programming language, arrays are considered values rather than pointers and represent the entirety of the array. Whenever an array is passed to a function, a copy is created, resulting in additional memory usage. To avoid this, it is possible to pass a pointer to an array, or use slices instead. The size of the array is constant and it must be known at compile time, and there is no need to use the built-in make function when defining arrays.
+## Implementation
+```go
+package main
+
+import "fmt"
+
+func main() {
+	var nums1 [2]int
+	nums2 := [3]int{1, 2, 3}
+	fmt.Println(nums1, nums2) // Prints [0 0] [1 2 3]
+}
+```
+
+Although arrays are fundamental data structures in Go, their constant size can make them inflexible and difficult to use in situations where a variable size is required. To address this issue, Go provides slices, an abstraction of arrays that offer more convenient access to sequential data typically stored in arrays. When a slice is passed to a function, only the slice header is passed, but it still references the same underlying array data, hence it is possible for the callee to modify the values of the slice and send them back to the caller.
+
+Slices enable adding values using the append function, allowing dynamic resizing. Additionally, selectors of the format [low:high] can be used to select or manipulate data in the slice. By utilizing slices instead of arrays, Go programmers benefit from a more flexible and powerful tool to manage their data structures.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	// Create a slice with elements 1, 2, 3.
+	nums := []int{1, 2, 3} // no need to allocate cap
+	nums = append([]int{0}, nums...) // Add a new element to the start
+	nums = append(nums, 4)           // Add a new element to the end
+	nums = nums[:len(nums)-1]        // Removes the last element
+	fmt.Println(nums)                // Prints [0 1 2 3]
+}
+```
+The make function can create a zeroed slice of a given length and capacity.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	nums := make([]int, 2)
+	nums[0], nums[1] = 0, 1
+	fmt.Println(nums, len(nums), cap(nums)) // Prints [0 1] 2 2
+}
+```
+
+Slice expressions in the form of input[low:high] can be used to manipulate slices or access their elements
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+    // Initialize a slice with 6 elements.
+	nums := []int{1, 2, 3, 4, 5, 6}
+	nums = nums[:len(nums)-1] // Drop the last element
+	nums = nums[1:]           // Drop the first element
+	nums = nums[1:]           // Keep all elements from index 1 to the end
+	nums = nums[:2]           // Keep all elements up to (but not including) index 2
+	nums = nums[1:2]          // Keep only the element at index 1
+	fmt.Println(nums)         // Prints [4]
+}
+```
+
+
+## Complexity
+Accessing an element within an array using an index has O(1) time complexity. This means that regardless of the size of the array, read and write operations for a given element can be performed in constant time.
+
+While arrays are useful for certain tasks, searching an unsorted array can be a time-consuming O(n) operation. Since the target item could be located anywhere in the array, every element must be checked until the item is found. Due to this limitation, alternative data structures such as linked-lists, trees and hash tables are often more suitable for search operations.
+
+Addition and deletion operations are at worst O(n) operations in Arrays. Removing an element can create an empty slot that must be eliminated by shifting the remaining items. Similarly, adding items to an array may require shifting existing items to create space for the added item. These inefficiencies can make alternative data structures, such as trees or hash tables, more suitable for managing operations involving additions and deletions.
+But at best, O(1) - if this is done at the end of the array
+
+
